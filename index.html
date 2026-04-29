@@ -120,7 +120,7 @@ button:hover {
 <div class="bg" id="hearts"></div>
 
 <div class="box">
-  <h2 id="title">Zadej tajné heslo:</h2>
+  <h2 id="title">Zadej místo 📍 (malá písmena a mezery):</h2>
 
   <input id="input" placeholder="...">
   <br>
@@ -160,7 +160,7 @@ function check() {
   if (step === 1) {
     if (val === "la bohema cafe") {
       step = 2;
-      title.innerText = "Zadej čas (digitálně):";
+      title.innerText = "Zadej čas 🕰️ (digitálně):";
       document.getElementById("input").value = "";
     } else {
       alert("Špatné heslo!");
@@ -171,7 +171,7 @@ function check() {
   else if (step === 2) {
     if (val === "16:00") {
       output.style.display = "block";
-      output.innerHTML = "💖 Lásule, budu se na tebe těšit v 16:00 v La Bohéma Cafe! ❤️";
+      output.innerHTML = "Lásule moje, budu se na tebe těšit v 16:00 v La Bohéma Cafe! ❤️";
       document.getElementById("input").style.display = "none";
       document.querySelector("button").style.display = "none";
       title.style.display = "none";
