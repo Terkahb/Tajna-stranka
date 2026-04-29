@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
@@ -59,6 +59,7 @@ body {
   padding: 15px;
   border-radius: 12px;
   margin-bottom: 10px;
+  transition: 0.5s ease;
 }
 
 h2 { margin: 0; font-size: 18px; }
@@ -114,7 +115,7 @@ button {
 }
 
 .open {
-  transform: rotate(20deg) scale(1.2);
+  transform: rotate(-20deg) scale(1.2);
   color: #6f5248;
 }
 
@@ -129,8 +130,8 @@ button {
 }
 
 @keyframes burst {
-  0% { transform: translate(0,0) scale(1); opacity: 1; }
-  100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+  0% { transform: translate(0,0); opacity: 1; }
+  100% { transform: translate(var(--x), var(--y)); opacity: 0; }
 }
 </style>
 </head>
@@ -143,9 +144,9 @@ button {
 
   <div id="lock">🔒</div>
 
-  <div class="text-box">
+  <div class="text-box" id="textBox">
     <h2 id="title">Zadej místo 📍</h2>
-    <span class="note">(digitálně)</span>
+    <span class="note" id="note">(malá písmena a mezery)</span>
   </div>
 
   <input id="input">
@@ -167,7 +168,7 @@ for (let i = 0; i < 40; i++) {
   hearts.appendChild(s);
 }
 
-/* 🔊 zvuk */
+/* 🔊 základní zvuk */
 function playSound() {
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const osc = ctx.createOscillator();
@@ -187,6 +188,33 @@ function playSound() {
   osc.stop(ctx.currentTime + 0.4);
 }
 
+/* 🎉 HURÁ ZVUK */
+function yaySound() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+  const notes = [523, 659, 784]; // C E G
+
+  notes.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = "triangle";
+    osc.frequency.value = freq;
+
+    gain.gain.setValueAtTime(0.25, ctx.currentTime + i * 0.12);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      ctx.currentTime + i * 0.12 + 0.4
+    );
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(ctx.currentTime + i * 0.12);
+    osc.stop(ctx.currentTime + i * 0.12 + 0.4);
+  });
+}
+
 /* 🎆 prskavky */
 function sparks() {
   for (let i = 0; i < 25; i++) {
@@ -195,14 +223,10 @@ function sparks() {
     s.style.left = "50%";
     s.style.top = "40%";
 
-    const x = (Math.random() - 0.5) * 300 + "px";
-    const y = (Math.random() - 0.5) * 300 + "px";
-
-    s.style.setProperty("--x", x);
-    s.style.setProperty("--y", y);
+    s.style.setProperty("--x", (Math.random()-0.5)*300 + "px");
+    s.style.setProperty("--y", (Math.random()-0.5)*300 + "px");
 
     document.body.appendChild(s);
-
     setTimeout(() => s.remove(), 1000);
   }
 }
@@ -216,6 +240,7 @@ function check() {
     if (val === "la bohema cafe") {
       step = 2;
       document.getElementById("title").innerText = "Zadej čas 🕰️";
+      document.getElementById("note").innerText = "(digitálně)";
       document.getElementById("input").value = "";
     } else alert("Špatné heslo!");
   }
@@ -223,13 +248,17 @@ function check() {
   else if (step === 2) {
     if (val === "16:00") {
 
-      /* 🔓 animace zámku */
-      document.getElementById("lock").classList.add("open");
+      /* 🔓 zámek */
+      const lock = document.getElementById("lock");
+      lock.innerText = "🔓";
+      lock.classList.add("open");
 
-      /* 🔊 zvuk */
+      /* ❌ odstranění boxu */
+      document.getElementById("textBox").style.display = "none";
+
+      /* efekty */
       playSound();
-
-      /* 🎆 prskavky */
+      yaySound();
       sparks();
 
       document.getElementById("zprava").style.display = "block";
@@ -238,7 +267,6 @@ function check() {
 
       document.getElementById("input").style.display = "none";
       document.querySelector("button").style.display = "none";
-      document.getElementById("title").style.display = "none";
 
     } else alert("Špatný čas!");
   }
