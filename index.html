@@ -2,6 +2,7 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tajná zpráva</title>
 
 <style>
@@ -17,7 +18,7 @@ body {
   overflow: hidden;
 }
 
-/* ❤️ SRDÍČKA (více + náhodný pohyb) */
+/* ❤️ SRDÍČKA (víc + random styl) */
 .bg {
   position: absolute;
   width: 100%;
@@ -28,29 +29,20 @@ body {
 
 .bg span {
   position: absolute;
-  font-size: 60px;
-  opacity: 0.3;
+  font-size: calc(30px + (var(--size) * 1px));
+  opacity: 0.25;
   color: #ff4d6d;
   animation: floatRandom linear infinite;
+  animation-duration: calc(8s + (var(--speed) * 1s));
+  animation-delay: calc(var(--delay) * -1s);
 }
 
-/* náhodné plutí */
 @keyframes floatRandom {
-  0% {
-    transform: translate(0, 100vh);
-  }
-  25% {
-    transform: translate(40px, 60vh);
-  }
-  50% {
-    transform: translate(-30px, 20vh);
-  }
-  75% {
-    transform: translate(30px, -40vh);
-  }
-  100% {
-    transform: translate(-20px, -120vh);
-  }
+  0% { transform: translate(0, 110vh); }
+  25% { transform: translate(30px, 60vh); }
+  50% { transform: translate(-20px, 20vh); }
+  75% { transform: translate(25px, -40vh); }
+  100% { transform: translate(-10px, -120vh); }
 }
 
 /* BOX */
@@ -59,12 +51,13 @@ body {
   z-index: 2;
   background: rgba(255,255,255,0.65);
   backdrop-filter: blur(8px);
-  padding: 30px;
+  padding: 25px;
   border-radius: 16px;
   text-align: center;
-  width: 320px;
+  width: 90%;
+  max-width: 340px;
   box-shadow: 0 0 20px rgba(0,0,0,0.15);
-  animation: fadeIn 1.5s ease;
+  animation: fadeIn 1.2s ease;
 }
 
 @keyframes fadeIn {
@@ -74,6 +67,7 @@ body {
 
 h2 {
   font-weight: normal;
+  font-size: 18px;
 }
 
 /* INPUT */
@@ -81,9 +75,10 @@ input {
   padding: 10px;
   border-radius: 10px;
   border: none;
-  width: 80%;
+  width: 90%;
   text-align: center;
   margin-top: 10px;
+  font-size: 16px;
 }
 
 /* BUTTON */
@@ -95,19 +90,20 @@ button {
   background: #8c6a5d;
   color: white;
   cursor: pointer;
+  width: 90%;
 }
 
 button:hover {
   background: #6f5248;
 }
 
-/* 🔓 ANIMACE ODEMKNUTÍ */
+/* 🔓 ZPRÁVA */
 #zprava {
-  margin-top: 20px;
+  margin-top: 15px;
   display: none;
   color: #3b2f2f;
   font-weight: bold;
-  animation: unlock 1.2s ease;
+  animation: unlock 1s ease;
 }
 
 @keyframes unlock {
@@ -115,113 +111,74 @@ button:hover {
   60% { opacity: 1; transform: scale(1.15); }
   100% { transform: scale(1); }
 }
-
-/* 🎉 CONFETTI */
-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 3;
-}
 </style>
 </head>
 
 <body>
 
-<!-- ❤️ VÍCE SRDÍČEK -->
-<div class="bg">
-  <span style="left:2%; animation-duration:12s;">❤️</span>
-  <span style="left:6%; animation-duration:14s;">❤️</span>
-  <span style="left:10%; animation-duration:10s;">❤️</span>
-  <span style="left:14%; animation-duration:16s;">❤️</span>
-  <span style="left:18%; animation-duration:11s;">❤️</span>
-  <span style="left:22%; animation-duration:13s;">❤️</span>
-  <span style="left:26%; animation-duration:9s;">❤️</span>
-  <span style="left:30%; animation-duration:15s;">❤️</span>
-  <span style="left:34%; animation-duration:12s;">❤️</span>
-  <span style="left:38%; animation-duration:14s;">❤️</span>
-  <span style="left:42%; animation-duration:10s;">❤️</span>
-  <span style="left:46%; animation-duration:16s;">❤️</span>
-  <span style="left:50%; animation-duration:11s;">❤️</span>
-  <span style="left:54%; animation-duration:13s;">❤️</span>
-  <span style="left:58%; animation-duration:9s;">❤️</span>
-  <span style="left:62%; animation-duration:15s;">❤️</span>
-  <span style="left:66%; animation-duration:12s;">❤️</span>
-  <span style="left:70%; animation-duration:14s;">❤️</span>
-  <span style="left:74%; animation-duration:10s;">❤️</span>
-  <span style="left:78%; animation-duration:16s;">❤️</span>
-  <span style="left:82%; animation-duration:11s;">❤️</span>
-  <span style="left:86%; animation-duration:13s;">❤️</span>
-  <span style="left:90%; animation-duration:9s;">❤️</span>
-  <span style="left:94%; animation-duration:15s;">❤️</span>
-</div>
-
-<canvas id="confetti"></canvas>
+<!-- ❤️ SRDÍČKA GENEROVANÁ -->
+<div class="bg" id="hearts"></div>
 
 <div class="box">
-  <h2>Zadej vyluštěnou šifru:</h2>
+  <h2 id="title">Zadej tajné heslo:</h2>
 
-  <input id="heslo" placeholder="...">
+  <input id="input" placeholder="...">
   <br>
-  <button onclick="zkontroluj()">Odemknout</button>
+  <button onclick="check()">Odemknout</button>
 
-  <div id="zprava">
-    🎂☕ Sejdeme se v 16:00!
-  </div>
+  <div id="zprava"></div>
 </div>
 
 <script>
 
-/* 🔐 kontrola */
-function zkontroluj() {
-  let h = document.getElementById("heslo").value;
+/* ❤️ generování srdíček */
+const hearts = document.getElementById("hearts");
 
-  if (h.toLowerCase() === "kafe") {
-    document.getElementById("zprava").style.display = "block";
-    startConfetti();
-  } else {
-    alert("Špatná šifra!");
-  }
+for (let i = 0; i < 40; i++) {
+  let s = document.createElement("span");
+
+  s.innerHTML = "❤️";
+  s.style.left = Math.random() * 100 + "%";
+  s.style.top = Math.random() * 100 + "%";
+
+  s.style.setProperty("--size", Math.random() * 40);
+  s.style.setProperty("--speed", Math.random() * 10);
+  s.style.setProperty("--delay", Math.random() * 10);
+
+  hearts.appendChild(s);
 }
 
-/* 🎉 confetti */
-function startConfetti() {
-  const canvas = document.getElementById("confetti");
-  const ctx = canvas.getContext("2d");
+/* 🔐 krok 1 + krok 2 */
+let step = 1;
 
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+function check() {
+  let val = document.getElementById("input").value.toLowerCase();
+  let title = document.getElementById("title");
+  let output = document.getElementById("zprava");
 
-  let pieces = [];
-
-  for (let i = 0; i < 120; i++) {
-    pieces.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height - canvas.height,
-      r: Math.random() * 5 + 2,
-      speed: Math.random() * 3 + 2
-    });
+  /* STEP 1 */
+  if (step === 1) {
+    if (val === "la bohema cafe") {
+      step = 2;
+      title.innerText = "Zadej čas (digitálně):";
+      document.getElementById("input").value = "";
+    } else {
+      alert("Špatné heslo!");
+    }
   }
 
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "#ff6b81";
-
-    pieces.forEach(p => {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
-
-      p.y += p.speed;
-      if (p.y > canvas.height) p.y = -10;
-    });
-
-    requestAnimationFrame(draw);
+  /* STEP 2 */
+  else if (step === 2) {
+    if (val === "16:00") {
+      output.style.display = "block";
+      output.innerHTML = "💖 Lásule, budu se na tebe těšit v 16:00 v La Bohéma Cafe! ❤️";
+      document.getElementById("input").style.display = "none";
+      document.querySelector("button").style.display = "none";
+      title.style.display = "none";
+    } else {
+      alert("Špatný čas!");
+    }
   }
-
-  draw();
 }
 
 </script>
