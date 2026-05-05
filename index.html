@@ -19,10 +19,11 @@ body {
 }
 
 .bg {
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100%;
   z-index: 0;
+  pointer-events: none;
 }
 
 .bg span {
@@ -41,14 +42,12 @@ body {
 .box {
   position: relative;
   z-index: 2;
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(8px);
+  background: rgba(255,255,255,0.7);
   padding: 25px;
   border-radius: 16px;
   text-align: center;
   width: 90%;
   max-width: 340px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.15);
 }
 
 .text-box {
@@ -56,74 +55,49 @@ body {
   padding: 15px;
   border-radius: 12px;
   margin-bottom: 10px;
-  transition: 0.5s ease;
-}
-
-h2 { margin: 0; font-size: 18px; }
-
-.note {
-  display: block;
-  font-size: 12px;
-  opacity: 0.7;
-  margin-top: 5px;
 }
 
 input {
-  padding: 10px;
+  padding: 12px;
   border-radius: 10px;
-  border: none;
+  border: 1px solid #ccc;
   width: 90%;
   text-align: center;
-  margin-top: 10px;
   font-size: 16px;
 }
 
 button {
   margin-top: 12px;
-  padding: 10px;
+  padding: 12px;
   width: 90%;
   border: none;
   border-radius: 10px;
   background: #8c6a5d;
   color: white;
-  cursor: pointer;
+  font-size: 16px;
+}
+
+/* ✅ opravené tlačítko */
+.next-btn {
+  display: none;
+  margin-top: 15px;
+  padding: 12px;
+  width: 90%;
+  border-radius: 10px;
+  background: #6f5248;
+  color: white;
+  text-decoration: none;
 }
 
 #zprava {
   margin-top: 15px;
   display: none;
   font-weight: bold;
-  animation: pop 1s ease;
-}
-
-@keyframes pop {
-  0% { transform: scale(0.5); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
 }
 
 #lock {
   font-size: 60px;
   margin-bottom: 10px;
-  transition: 0.6s ease;
-}
-
-.open {
-  transform: rotate(-20deg) scale(1.2);
-  color: #6f5248;
-}
-
-.spark {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  background: gold;
-  border-radius: 50%;
-  animation: burst 1s ease-out forwards;
-}
-
-@keyframes burst {
-  0% { transform: translate(0,0); opacity: 1; }
-  100% { transform: translate(var(--x), var(--y)); opacity: 0; }
 }
 </style>
 </head>
@@ -138,73 +112,30 @@ button {
 
   <div class="text-box" id="textBox">
     <h2 id="title">Zadej místo 📍</h2>
-    <span class="note" id="note">(malá písmena a bez mezer)</span>
+    <span id="note">(malá písmena a bez mezer)</span>
   </div>
 
   <input id="input">
   <button onclick="check()">Odemknout</button>
 
   <div id="zprava"></div>
+
+  <a href="https://terkahb.github.io/Ukoly/" class="next-btn" id="nextBtn">
+    Další úkol 💌
+  </a>
+
 </div>
 
 <script>
 
-/* ❤️ srdíčka */
+/* srdíčka */
 const hearts = document.getElementById("hearts");
-
 for (let i = 0; i < 40; i++) {
   let s = document.createElement("span");
   s.innerHTML = "❤️";
   s.style.left = Math.random()*100 + "%";
   s.style.animationDuration = (6 + Math.random()*10) + "s";
   hearts.appendChild(s);
-}
-
-/* 🔊 základní zvuk */
-function playSound() {
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(660, ctx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.3);
-
-  gain.gain.setValueAtTime(0.2, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-
-  osc.start();
-  osc.stop(ctx.currentTime + 0.4);
-}
-
-/* 🎆 prskavky */
-function sparks() {
-  for (let i = 0; i < 25; i++) {
-    const s = document.createElement("div");
-    s.className = "spark";
-    s.style.left = "50%";
-    s.style.top = "40%";
-
-    s.style.setProperty("--x", (Math.random()-0.5)*300 + "px");
-    s.style.setProperty("--y", (Math.random()-0.5)*300 + "px");
-
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 1000);
-  }
-}
-
-/* 🎉 HAPTICKÁ VIBRACE (HAPPY BIRTHDAY EFFECT) */
-function birthdayVibration() {
-  if (navigator.vibrate) {
-    navigator.vibrate([
-      200, 100, 200, 100,
-      300, 100, 500, 200,
-      300
-    ]);
-  }
 }
 
 let step = 1;
@@ -224,22 +155,18 @@ function check() {
   else if (step === 2) {
     if (val === "16:00") {
 
-      const lock = document.getElementById("lock");
-      lock.innerText = "🔓";
-      lock.classList.add("open");
-
+      document.getElementById("lock").innerText = "🔓";
       document.getElementById("textBox").style.display = "none";
 
-      playSound();
-      sparks();
-      birthdayVibration();
-
       document.getElementById("zprava").style.display = "block";
-      document.getElementById("zprava").innerHTML =
+      document.getElementById("zprava").innerText =
         "Lásule moje, budu se na tebe těšit v 16:00 v La Bohéma Cafe! ❤️";
 
       document.getElementById("input").style.display = "none";
       document.querySelector("button").style.display = "none";
+
+      /* ✅ zobraz tlačítko */
+      document.getElementById("nextBtn").style.display = "block";
 
     } else alert("Špatný čas!");
   }
