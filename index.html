@@ -112,7 +112,7 @@ button {
 
   <div class="text-box" id="textBox">
     <h2 id="title">Zadej místo 📍</h2>
-    <span id="note">(velká písmena a bez mezer)</span>
+    <span id="note">(velká písmena, bez mezer a diakritiky)</span>
   </div>
 
   <input id="input">
@@ -144,7 +144,7 @@ function check() {
   let val = document.getElementById("input").value.toLowerCase();
 
   if (step === 1) {
-    if (val === "ČERNEJMOST") {
+    if (val === "CERNEJMOST") {
       step = 2;
       document.getElementById("title").innerText = "Zadej čas 🕰️";
       document.getElementById("note").innerText = "(digitálně)";
@@ -160,7 +160,7 @@ function check() {
 
       document.getElementById("zprava").style.display = "block";
       document.getElementById("zprava").innerText =
-        "Lásule moje, budu se na tebe těšit v 16:00 v La Bohème Cafe! ❤️ ";
+        "Verďásku, sejdeme se na autobusovém nádraží na Černém mostě. Odjezd je v 16:20, tak se sejdeme v 16:00 ";
 
       document.getElementById("input").style.display = "none";
       document.querySelector("button").style.display = "none";
